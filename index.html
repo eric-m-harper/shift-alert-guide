@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shift Alert Automation — Setup Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f6f8;
+    color: #1a1d23;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page { max-width: 780px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .guide-header {
+    background: #fff;
+    border: 1px solid #e4e6ea;
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .guide-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1d23;
+    margin-bottom: 6px;
+  }
+  .guide-header .subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 14px;
+  }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .badge-blue  { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .badge-green { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+  .badge-amber { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 1.5rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-num.check { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; font-size: 16px; }
+  .step-num.icon  { background: #faf5ff; color: #7c3aed; border-color: #ddd6fe; font-size: 15px; }
+  .section-header h2 { font-size: 17px; font-weight: 600; color: #1a1d23; }
+
+  /* ── Card ── */
+  .card {
+    background: #fff;
+    border: 1px solid #e4e6ea;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── Sub label ── */
+  .sub-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+  }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 7px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .checklist input[type=checkbox] { margin-top: 4px; flex-shrink: 0; width: 15px; height: 15px; cursor: pointer; accent-color: #2563eb; }
+  .checklist input[type=checkbox]:checked + span { color: #9ca3af; text-decoration: line-through; }
+
+  /* ── Field rows ── */
+  .field-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+  }
+  .field-row:last-child { border-bottom: none; }
+  .field-label {
+    font-weight: 500;
+    font-size: 12px;
+    color: #6b7280;
+    min-width: 130px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── Table ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .data-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e4e6ea;
+  }
+  .data-table td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  /* ── Numbered step list ── */
+  .step-list { list-style: none; counter-reset: steps; }
+  .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .step-list li::before {
+    content: counter(steps);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: 1px solid #e4e6ea;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #6b7280;
+  }
+
+  /* ── Code block ── */
+  .code-block {
+    background: #f8faff;
+    border: 1px solid #dbeafe;
+    border-left: 3px solid #3b82f6;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+    font-size: 13px;
+    color: #1d4ed8;
+    margin: 8px 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  code {
+    background: #f3f4f6;
+    border: 1px solid #e4e6ea;
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 12.5px;
+    color: #374151;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    margin: 10px 0;
+    align-items: flex-start;
+    border: 1px solid;
+  }
+  .callout-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+  .callout.tip     { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+  .callout.info    { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+  .callout.success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: #f3f4f6; margin: 12px 0; }
+
+  /* ── Two-col grid ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── Flow diagram ── */
+  .flow-box {
+    background: #f9fafb;
+    border: 1px solid #e4e6ea;
+    border-radius: 14px;
+    padding: 1.25rem;
+  }
+  .flow-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .flow-row { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; }
+  .flow-arrow { color: #9ca3af; flex-shrink: 0; padding-top: 8px; font-size: 13px; }
+  .flow-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #e4e6ea;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    flex: 1;
+    color: #374151;
+  }
+  .flow-node.trigger { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+  .flow-node.yes     { border-color: #bbf7d0; background: #f0fdf4; color: #166534; }
+  .flow-node.no      { background: #f9fafb; color: #9ca3af; }
+  .flow-node-icon { font-size: 15px; }
+  .branch-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 3px 0; }
+
+  /* ── Troubleshooting table ── */
+  .trouble-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .trouble-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e4e6ea;
+  }
+  .trouble-table td { padding: 9px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+  .trouble-table tr:last-child td { border-bottom: none; }
+
+  /* ── Enhancement pills ── */
+  .enhance-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+  }
+  .enhance-row:last-child { border-bottom: none; }
+  .enhance-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f3f4f6;
+    color: #374151;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="guide-header">
+    <h1>Shift Alert Automation — Setup Guide</h1>
+    <p class="subtitle">Two automated flows that DM you privately in Teams whenever a shift has fewer than 2 employees. No coding required.</p>
+    <div class="badges">
+      <span class="badge badge-blue">📊 Excel (OneDrive)</span>
+      <span class="badge badge-blue">⚡ Power Automate</span>
+      <span class="badge badge-green">💬 Microsoft Teams</span>
+      <span class="badge badge-amber">⏱ ~30–45 min setup</span>
+    </div>
+  </div>
+
+  <!-- Prerequisites -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num check">✓</div>
+      <h2>Prerequisites</h2>
+    </div>
+    <div class="card">
+      <ul class="checklist">
+        <li><label><input type="checkbox"><span>Excel file is saved to <strong>OneDrive</strong> (not your local desktop)</span></label></li>
+        <li><label><input type="checkbox"><span>Shift data is formatted as an <strong>Excel Table</strong> (not just a plain range)</span></label></li>
+        <li><label><input type="checkbox"><span>You have access to Power Automate at <strong>flow.microsoft.com</strong></span></label></li>
+        <li><label><input type="checkbox"><span>You have a <strong>Microsoft 365</strong> work or personal account</span></label></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">1</div>
+      <h2>Prepare your Excel file</h2>
+    </div>
+    <div class="card">
+      <div class="sub-label">Required columns</div>
+      <table class="data-table">
+        <thead><tr><th>Column name</th><th>Example</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>ShiftDate</code></td><td>06/15/2025</td><td>Must be Date-formatted, not Text</td></tr>
+          <tr><td><code>ShiftName</code></td><td>Morning Shift</td><td>Label shown in the alert</td></tr>
+          <tr><td><code>StartTime</code></td><td>08:00 AM</td><td>Optional — appears in the alert message</td></tr>
+          <tr><td><code>EmployeeCount</code></td><td>1</td><td>Number of employees scheduled</td></tr>
+        </tbody>
+      </table>
+      <div class="divider"></div>
+      <div class="sub-label">Convert your data to a named table</div>
+      <ol class="step-list">
+        <li>Click any cell inside your data</li>
+        <li>Press <code>Ctrl + T</code> and check "My table has headers" → click OK</li>
+        <li>In the Table Design tab → Table Name field, name it <code>ShiftSchedule</code></li>
+        <li>Save the file to OneDrive</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">2</div>
+      <h2>Open Power Automate</h2>
+    </div>
+    <div class="card">
+      <ol class="step-list">
+        <li>Go to <strong>flow.microsoft.com</strong> and sign in</li>
+        <li>Click <strong>Create</strong> in the left sidebar</li>
+        <li>Select <strong>Scheduled cloud flow</strong></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">3</div>
+      <h2>Flow 1 — 48-hour advance alert</h2>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">3a — Schedule trigger</div>
+      <div class="field-row"><span class="field-label">Flow name</span><span><code>Shift Alert - 48 Hour Warning</code></span></div>
+      <div class="field-row"><span class="field-label">Repeat every</span><span>1 Day</span></div>
+      <div class="field-row"><span class="field-label">At</span><span>08:00 AM (or your preferred time)</span></div>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">3b — List rows from Excel</div>
+      <ol class="step-list">
+        <li>Click <strong>+ New step</strong> → search <strong>Excel Online (Business)</strong></li>
+        <li>Select action: <strong>List rows present in a table</strong></li>
+      </ol>
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Location</span><span>OneDrive for Business</span></div>
+      <div class="field-row"><span class="field-label">Document Library</span><span>OneDrive</span></div>
+      <div class="field-row"><span class="field-label">File</span><span>Browse and select your Excel file</span></div>
+      <div class="field-row"><span class="field-label">Table</span><span><code>ShiftSchedule</code></span></div>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">3c — Filter array (understaffed in 48 hours)</div>
+      <ol class="step-list">
+        <li>Click <strong>+ New step</strong> → search <strong>Filter array</strong> (Data Operations)</li>
+        <li>In the <strong>From</strong> field, select <strong>value</strong> from Dynamic content</li>
+      </ol>
+      <div class="divider"></div>
+      <div class="sub-label" style="margin-top:8px">Condition 1</div>
+      <div class="field-row"><span class="field-label">Left side</span><span><code>ShiftDate</code> (from dynamic content)</span></div>
+      <div class="field-row"><span class="field-label">Operator</span><span>is equal to</span></div>
+      <div class="field-row"><span class="field-label">Right side</span><span>Expression tab →</span></div>
+      <div class="code-block">formatDateTime(addDays(utcNow(), 2), 'yyyy-MM-dd')</div>
+      <div class="sub-label">Click + Add row → AND → Condition 2</div>
+      <div class="field-row"><span class="field-label">Left side</span><span><code>EmployeeCount</code> (from dynamic content)</span></div>
+      <div class="field-row"><span class="field-label">Operator</span><span>is less than</span></div>
+      <div class="field-row"><span class="field-label">Right side</span><span><code>2</code></span></div>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">3d — Check if any results were found</div>
+      <ol class="step-list">
+        <li>Click <strong>+ New step</strong> → search <strong>Condition</strong></li>
+      </ol>
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Left side</span><span>Expression tab →</span></div>
+      <div class="code-block">length(body('Filter_array'))</div>
+      <div class="field-row"><span class="field-label">Operator</span><span>is greater than</span></div>
+      <div class="field-row"><span class="field-label">Right side</span><span><code>0</code></span></div>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">3e — YES branch: send Teams DM to yourself</div>
+      <ol class="step-list">
+        <li>Inside the <strong>If yes</strong> box → click <strong>Add an action</strong></li>
+        <li>Search <strong>Microsoft Teams</strong> → select <strong>Post a message in a chat or channel</strong></li>
+      </ol>
+      <div class="divider"></div>
+      <div class="field-row"><span class="field-label">Post as</span><span>User</span></div>
+      <div class="field-row"><span class="field-label">Post in</span><span><strong>Chat with myself</strong></span></div>
+      <div class="field-row"><span class="field-label">Message</span><span>Use the template below</span></div>
+      <div class="code-block">⚠️ SHIFT ALERT — 48 Hour Warning
+
+The following shift(s) in 2 days have fewer than 2 employees:
+
+Shift: [ShiftName]
+Date: [ShiftDate]
+Start Time: [StartTime]
+Employees Scheduled: [EmployeeCount]
+
+Please arrange cover as soon as possible.</div>
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <span>Replace the bracketed placeholders by clicking into the message field and selecting the matching column names from the <strong>Dynamic content</strong> panel on the right.</span>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-bottom:1rem">
+      <span class="callout-icon">ℹ️</span>
+      <span>Leave the <strong>NO branch empty</strong> — if no understaffed shifts are found, the flow simply ends silently.</span>
+    </div>
+
+    <div class="card">
+      <div class="sub-label">3f — Save and test</div>
+      <ol class="step-list">
+        <li>Click <strong>Save</strong> in the top right</li>
+        <li>Click <strong>Test</strong> → select Manually → click Test</li>
+        <li>Check your Teams chat with yourself for the alert</li>
+      </ol>
+      <div class="callout success" style="margin-top:10px">
+        <span class="callout-icon">✅</span>
+        <span>Flow 1 is complete. You should see the test message appear in your Teams DM to yourself.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">4</div>
+      <h2>Flow 2 — day-of reminder</h2>
+    </div>
+    <div class="card">
+      <p style="font-size:14px;margin-bottom:12px">Repeat all steps from Flow 1 with only these changes:</p>
+      <div class="field-row"><span class="field-label">Flow name</span><span><code>Shift Alert - Day Of Reminder</code></span></div>
+      <div class="field-row"><span class="field-label">Time</span><span>07:00 AM (earlier than Flow 1)</span></div>
+      <div class="field-row"><span class="field-label">Date expression</span><span>Change to →</span></div>
+      <div class="code-block">formatDateTime(utcNow(), 'yyyy-MM-dd')</div>
+      <div class="field-row"><span class="field-label">Message prefix</span><span>🔴 SHIFT ALERT — Today's Reminder</span></div>
+    </div>
+  </div>
+
+  <!-- Step 5 — Summary -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">5</div>
+      <h2>Final flow summary</h2>
+    </div>
+    <div class="two-col">
+      <div class="flow-box">
+        <div class="flow-title">🕗 Flow 1 — daily at 8:00 AM</div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node trigger"><span class="flow-node-icon">📅</span> Scheduled trigger</div></div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node"><span class="flow-node-icon">📊</span> Read ShiftSchedule</div></div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node"><span class="flow-node-icon">🔍</span> Filter: date = today +2 &amp; count &lt; 2</div></div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node"><span class="flow-node-icon">🔀</span> Any results?</div></div>
+        <div class="branch-row">
+          <div class="flow-node yes"><span>✅</span> DM yourself</div>
+          <div class="flow-node no"><span>✗</span> End silently</div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-title">🕖 Flow 2 — daily at 7:00 AM</div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node trigger"><span class="flow-node-icon">📅</span> Scheduled trigger</div></div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node"><span class="flow-node-icon">📊</span> Read ShiftSchedule</div></div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node"><span class="flow-node-icon">🔍</span> Filter: date = today &amp; count &lt; 2</div></div>
+        <div class="flow-row"><span class="flow-arrow">↓</span><div class="flow-node"><span class="flow-node-icon">🔀</span> Any results?</div></div>
+        <div class="branch-row">
+          <div class="flow-node yes"><span>✅</span> DM yourself</div>
+          <div class="flow-node no"><span>✗</span> End silently</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num icon">🔧</div>
+      <h2>Troubleshooting</h2>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="trouble-table">
+        <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>"File not found" error</td><td>Make sure Excel is saved to OneDrive, not your local desktop</td></tr>
+          <tr><td>No dynamic content showing</td><td>Your Excel data must be a named Table — not just a plain range</td></tr>
+          <tr><td>Flow runs but no message sent</td><td>Filter found no matches — check ShiftDate is formatted as Date, not Text</td></tr>
+          <tr><td>Date filter not matching</td><td>Ensure ShiftDate cells use Date format in Excel, not Text format</td></tr>
+          <tr><td>"Post as User" option missing</td><td>Try "Post as Flow Bot" — admin permissions may be required for User mode</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Enhancements -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num icon">✨</div>
+      <h2>Optional enhancements</h2>
+    </div>
+    <div class="card">
+      <div class="enhance-row"><span class="enhance-pill">Email backup</span><span style="font-size:14px">Add an Outlook "Send email" action alongside the Teams message</span></div>
+      <div class="enhance-row"><span class="enhance-pill">Multi-shift</span><span style="font-size:14px">Already handled — each matching row triggers its own line in the message</span></div>
+      <div class="enhance-row"><span class="enhance-pill">Escalation</span><span style="font-size:14px">Add a second Teams message to a manager if still understaffed 24 hours out</span></div>
+      <div class="enhance-row"><span class="enhance-pill">Snooze logic</span><span style="font-size:14px">Use a SharePoint list to track acknowledged alerts and avoid repeat pings</span></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
